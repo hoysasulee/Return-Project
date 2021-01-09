@@ -15,7 +15,6 @@ Monument.
 
 Starting business with my code from now, 2021.
 
-Strategies
-~~~~~~~~~~~~~~~
+## Strategies
 
 - Project
