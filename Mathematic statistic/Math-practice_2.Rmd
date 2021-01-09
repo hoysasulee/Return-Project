@@ -1,6 +1,10 @@
 ### Question 1: 
 
+# In this question we will evaluate type I and type II error probabilities for one-sided tests. We will consider normally distributed data, with unit variance and independent obervations. We will use H0 : µ = 0 for the null and H1 : µ = 1 for the alternative, unless otherwise stated.
+
 > Task a
+
+## Suppose we have n = 6 observations x1,...,x6. What is the sampling distribution of the sample mean (that is, of ba(x) = 1/6(x_1 +··· + x_6)?)
 
 In the theory, the sample mean of $x_1,..,x_6$ which are considered in standard Gaussian $N(0,1)$ should be like this:
 \begin{equation}
@@ -41,6 +45,8 @@ The distribution met the theory basically, we can consider that the distribution
 
 > Task b
 
+# We want a test with size α = 0.05. This test is to be of the form “reject H0 if the sample mean x exceeds T ” (where T is a value to be determined).You will recall that α is the probability of rejecting H0 when true. Find an appropriate value of T .
+
 Find a test with $α = 0.05$, the value of T which is reflected in $P(X < T) = 0.95$ is helpful to obtain a line to divide the option between rejection and fail rejection for the null. 
 ```{r}
 qnorm(0.95,mean=0,sd=1/sqrt(6))
@@ -73,6 +79,8 @@ The p-value is uniformly distributed, therefore, the probability of it being les
 
 > Task c
 
+# Calculate β, the probability of failing to reject the null hypothesis when the alternative is true, and state the power of the test.
+
 To calculate $\beta$ which is the probability of failing to reject the null hypothesis when the alternative $H_1:\mu=1$ is true.
 ```{r}
 table(replicate(10000,mean(rnorm(6,mean=1))>qnorm(0.95,sd=1/sqrt(6))))
@@ -94,6 +102,8 @@ abline(v=qnorm(0.95,sd=1/sqrt(6)))
 
 > Task d
 
+# Consider a test of size α = 0.01. Calculate the power of this test.
+
 When $\alpha=0.01$, the power of this test should be:
 ```{r}
 pnorm(qnorm(0.99,sd=1/sqrt(6)),mean=1,sd=1/sqrt(6),lower.tail=FALSE)
@@ -103,6 +113,8 @@ It is 0.54.
 <br><br/>
 
 > Task e
+
+#  How many observations would it take to have a size of at most 0.01 and a power of at least 0.99?
 
 We can notice that with the growth of observations, the power of the test would be increasing.
 ```{r}
@@ -122,6 +134,8 @@ pnorm(qnorm(0.99,sd=1/sqrt(22)),mean=1,sd=1/sqrt(22),lower.tail=FALSE)
 <br><br/>
 
 > Task f
+
+# Now we will consider the case where the null and alternative hypotheses are very close. We will have H0 : µ = 0 but now H1 : µ = 0.02. Now how many observations are needed to ensure α is at most 0.01 and the power is at least 0.99?
 
 Plot a graph in terms of the relation between observation and power in order to narrow the range for search. It looks like this.
 ```{r}
@@ -184,7 +198,23 @@ It needs 54119 observations to ensure $\alpha$ is at most 0.01 and the power is 
 
 ### Question 2: 
 
+# This question will consider likelihood values for the Gaussian distribution. Use your student ID to set the random number seed, then take a sample of size 5 from the standard (mean zero, standard deviation 1) Gaussian distribution:
+```{r}
+> set.seed(1266402) # this is my student ID; you use yours!
+> x <- rnorm(5)
+```
+
 > Task a
+
+# Using R commands similar to
+# prod(dnorm(x,mean=1,sd=2))
+# sum(dnorm(x,mean=1,sd=2,log=TRUE))
+# Calculate the log-likelihoods for:
+• mean=0,sd=1;
+• mean=0,sd=1.1;
+• mean=0.1,sd=1
+• mean=0.1,sd=1.1.
+# State which one is the most likely.
 
 Set the random number seed firstly.
 ```{r}
@@ -213,6 +243,8 @@ The log-likelihood for mean = 0 and sd = 1 is the most likely situation, because
 <br><br/>
 
 > Task b
+
+# Find an (approximate!) maximum likelihood estimate for the mean and standard deviation. Use trial-and-error; determine the mean first, on the assuption that the SD=1. Then determine the standard deviation, using your value of the mean. Two decimal places are fine.
 
 Firstly, we plot a support function to seek the feasible range of maximum likelihood.
 ```{r}
@@ -313,14 +345,22 @@ In conclusion, when mean = -0.36, sd = 0.85, the likelihood estimate is close to
 
 ### Question 3:
 
+# Consider an experiment which is a Bernoulli trial: it either succeeds with probability p or fails with probability 1−p; trials are independent of one another. 
+# Throughout this question we specify a null hypothesis H_0 : p = 1/2, and an alternative hypothesis H_A : p = 2/3. 
+# We perform the experiment 50 times, and our observation is r = 32 successes and 18 failures. Only one-sided tests are considered here.
+
 > Task a
- 
+
+#  State the precise definition of p-value for our observation of 32 successes and state what “more extreme” means in this context.
+
 P-value in this task represents the probability for the null hypothesis is success to obtain the observation $r=32$ or an observation more extreme.
 
 The more extreme here means the situation when the obeservation larger than the observed sample mean.
 <br><br/>
 
 > Task b
+
+# Calculate the p-value for the observation of 32 successes, and say whether we reject the null at the 5% level.
 
 Calculate p-value based on null hypothesis $H_0$ : $P = 0.5$.
 ```{r}
@@ -336,6 +376,8 @@ legend=c("more extreme","distribution"))
 <br><br/>
 
 > Task c
+
+# You will recall that the support is the logarithm of the likelihood. Can we reject H0 using the method of support?
 
 ```{r}
 support <- function(m){sum(dbinom(32:50,50,0.5))}
@@ -354,6 +396,8 @@ abline(h=-2)
 <br><br/>
 
 > Task d
+
+# Devise a test of size not exceeding 1% and calculate its power.
 
 The power of size not exceeding 1% is:
 ```{r}
