@@ -1,0 +1,339 @@
+---
+title: "STAT805 Assignment 1"
+subtitle: "Kexiang Huang"
+output:
+  word_document: default
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+### Question 1: 
+
+This is my function: 
+\begin{equation}
+\ f(x) = \sin(\sin(x^2)) + \cos(\frac{1}{1+x+x^2})-1
+\end{equation}
+
+> Task 1
+
+Translate this function into R idiom and plot it for $x ∈ [−2, 2]$.
+```{r}
+x <- seq(from=-2, to=2, len=100)
+f <- function(x){sin(sin(x^2)) + cos(1/(1+x+x^2))-1}
+plot(x,f(x))
+abline(0,0)
+```
+
+Let's verify the result.
+```{r}
+f(0) == (sin(sin(0)) + cos(1/(1+0+0))- 1)
+```
+<br><br/>
+
+> Task 2
+
+As we can see from the last graph, the function has 4 intersections with x-axis, they are seem like to be (-1.8,0), (-0.8,0), (0.5,0) and (1.8, 0) respectively. Thus we verify the area which is close to these intersections.
+
+```{r}
+uniroot(f,interval=c(-2,-1))
+uniroot(f,interval=c(-1,-0))
+uniroot(f,interval=c(0,1))
+uniroot(f,interval=c(1,2))
+```
+The outputs are similar to our prediction. Subsequently, we verify it.
+```{r}
+plot(x,f(x),axes=FALSE,type='l') 
+axis(1,pos=0) # x-axis, at (vertical) position 0
+axis(2,pos=0) # y-axis, at (vertical) position 0
+points(c(-1.745991,-0.8358447,0.4323219,1.768418),c(0,0,0,0),pch=4,cex=3,col='red')
+```
+
+Correct. All the points outputted through the function ```uniroot()``` sit on the x-axis as well as the intersections with the main function.
+<br><br/>
+
+> Task 3
+
+The next stage is using definition method to differentiate the main function. 
+\begin{equation}
+\ f'(x) = \frac{f(x+\delta x)-f(x)}{\delta x}
+\end{equation}
+According to this clue, we can build an approximate derivative in the same range.
+```{r}
+dx <- 1e-6
+fdash <- function(x){(f(x+dx)-f(x))/dx}
+plot(x,fdash(x),main = "f'(x)")
+abline(0,0)
+```
+
+Verifying it. All the maximum value and minimum value of the original function are fell in the position where the derivative function intersects at zero. It shows that $f'(x)$ is the correct derivative function of $f(x)$. 
+```{r}
+plot(x,f(x),type='l',main="f and fdash")
+points(x,fdash(x),type='l',col='red')
+legend("topleft",lty=1,col=c("black","red"),legend=c("f(x)","fdash(x)"))
+abline(0,0)
+```
+<br><br/>
+
+> Task 4
+
+The minimum of this function in the domain $[-1,1]$ is below.
+```{r}
+optimize(f(x),c(-1,1))
+```
+Verifying it. It correctly marks the minimum value of function $f(x)$.
+```{r}
+plot(x,f(x))
+points(c(-0.3038049),c(-0.6100053),pch=4,col="red",cex=4)
+```
+<br><br/>
+
+> Task 5
+
+Local maxima in the domain $[-2,2]$.
+```{r}
+optimize(f(x),c(-2,0),maximum = TRUE)
+optimize(f(x),c(0,2),maximum = TRUE)
+```
+Verifying it. Both of them are the local maxima.
+```{r}
+plot(x,f(x))
+points(c(-1.369005,1.270529),c(0.6032292,0.808012),pch=4,col="red",cex=4)
+```
+<br><br/>
+
+> Task 6
+
+The integration of this function from 0 to 2 can be described like this.
+```{r}
+z <- seq(from=0,to=2,len=100)
+jj <- c(x,rev(x))
+plot(x,f(x))
+polygon(c(z,rev(z)),c(z*-1000000,f(rev(z))),col="red")
+abline(v=0)
+```
+
+The value of this area equal 0.5021359:
+```{r}
+integrate(f,0,2)
+```
+Verifying. Calculate the sum of the areas under the function in the domain from 0 to 2.
+```{r}
+t <- seq(from=0, to=2,by=dx)
+sum(f(t)*dx)
+```
+
+It is close to the output by function ```integrate()```, we can consider the function outcomes the correct result.
+
+### Question 2:
+This is my function:
+\begin{equation}
+\ f(x,y) = x^2 + y^2 + 7sin(x+y^2)
+\end{equation}
+
+> Task 1
+
+Translate this function into R idiom and find the value of it when fulfil  $f(0.4,0.5)$.
+```{r}
+f <- function(x,y){x^2 + y^2 + 7*sin(x+y^2)}
+f(0.4,0.5)
+```
+Verifying it through substitute the x=0.4 and y=0.5 into the above equation.
+```{r}
+f(0.4,0.5) == 0.4^2+0.5^2+7*sin(0.4+0.5^2)
+```
+<br><br/>
+
+> Task 2
+
+The contour graph of this function in the prescribed range would be like this.
+```{r}
+xvals <- seq(from = -3, to = +3, len=100)
+yvals <- seq(from = -3, to = +3, len=100)
+f <- function(v){
+  x <- v[1]
+  y <- v[2]
+  return(x^2 + y^2 + 7*sin(x+y^2))
+}
+jj <- expand.grid(xvals,yvals)
+ M <- apply(jj,1,f) 
+ M <- matrix(M,100,100) 
+ par(pty="s")
+ contour(xvals,yvals,M,asp=1,xlim=range(xvals),ylim=range(yvals))
+ persp(xvals,yvals,M) 
+```
+<br><br/>
+
+> Task 3
+
+Function ```optim()``` can be used to seek the local minimum of this function.
+```{r}
+optim(c(0.5,2),f)
+```
+Verifying it. It is indeed at the center of the contour.
+```{r}
+xvals <- seq(from = 0.5001312-0.1, to = 0.5001312+0.1,len=100)
+yvals <- seq(from =2.0171683-0.1, to =2.0171683+0.1,len=100)
+jj <- expand.grid(xvals,yvals)
+M <- apply(jj,1,f) 
+M <- matrix(M,100,100) 
+par(pty="s")
+contour(xvals,yvals,M,asp=1,xlim=range(xvals),ylim=range(yvals))
+points(0.5001312,2.0171683,pch=16,col='red')
+```
+<br><br/>
+
+> Task 4
+
+Next stage is to explore the volume enclosed between the x-y plane and the function surface in the plotting region. It needs the package 'cubature', make sure you have download it ```install.packages("cubature")```before.  
+```{r}
+cubature::hcubature(f,rep(0,3),rep(1,3),tol=1e-4) 
+```
+
+### Question 3
+This is my matrix:
+$$
+M=\left(\begin{array}{ccc} 
+5 & 1 & 1\\
+1 & 2 & 1\\
+1 & 1 & 2
+\end{array}\right)
+$$
+
+> Task 1
+
+The method to calculate the det of this matrix is below.
+```{r}
+M <- matrix(c(5,1,1,1,2,1,1,1,2),3,3)
+det(M)
+```
+
+Verifying it.
+```{r}
+det(M) == 5*2*2+1*1*1+1*1*1-1*2*1-1*1*2-1*1*5
+```
+
+And the trace of this matrix.
+```{r}
+tr <- function(A){sum(diag(A))}
+tr(M)
+```
+
+Verifying it.
+```{r}
+trace <- function(A) {
+  n <- dim(A)[1] 
+  tr <- 0 
+  for (k in 1:n) {
+    l <- A[k,k]
+    tr <- tr + l
+  }
+  return(tr[[1]])
+}
+tr(M) == trace(M)
+```
+<br><br/>
+
+> Task 2
+
+$M^{-1}$ can be found by:
+```{r}
+solve(M)
+```
+
+Verifying it, after multiply by the original matrix, each vector should be close to 0.
+```{r}
+solve(M) %*% M
+```
+<br><br/>
+
+> Task 3
+
+The eigenvectors and eigenvalues of this matrix is below.
+```{r}
+eigen(M)
+```
+
+According to the definition of eigenvalues $Ax=λx$, we can verify this result by this method.
+```{r}
+vec1 <- eigen(M)$vectors[,1]
+val1 <- eigen(M)$values[1]
+LHS <- M   %*% vec1           
+RHS <- val1 *  vec1           
+LHS <- c(LHS)                 
+cbind(LHS,RHS, diff=LHS-RHS)
+```
+
+The 'diff' list showed the difference between matrix multiplication by A and scalar multiplication by λ, each value is close to 0, that means the equation is hold.
+<br><br/>
+
+> Task 4
+
+The graph of $det (N(x))$ in the random (-3,4) would be like this.
+```{r}
+N <- function(x){
+ matrix(c(5,1,x,1,2,1,x,1,2),3,3) 
+}
+Y <- function(M){
+  det(M)
+}
+f <- function(x){Y(N(x))}
+x <- seq(from=-3,to=4,len=100)
+plot(x,sapply(x,f),type='l')
+grid()
+```
+
+Then, we notice that:
+
+* The determinant of 3*3 real symmetric matrix with 2 unknown variables in continuous range also satisfies symmetry.
+
+* However, the axis of symmetry is not y=0 in this matrix.
+
+* The property of its symmetry shows that The symmetric matrix can be diagonalized by some matrix.
+<br><br/>
+
+> Task 5
+
+The eigenvalue of the instance matrix would be like this.
+```{r}
+#x <- seq(from=-1, to=1, len=20)
+#y <- seq(from=-1, to=1, len=20)
+#P <- function(v){
+#  x <- v[1]
+#  y <- v[2]
+#  return(matrix(c(5,y,x,y,2,1,x,1,x),3,3))
+#}
+#P(x) - P(y) # Verify the relation about P(x,y)
+#jj <- expand.grid(x,y)
+#Z <- sapply(jj,P)
+#eigen(Z)
+
+eigen(matrix(c(5,-1,-1,-1,2,1,-1,1,-1),3,3)) # when x=-1, y=-1
+eigen(matrix(c(5,-1,0,-1,2,1,0,1,0),3,3)) # when x=0, y=-1
+eigen(matrix(c(5,-1,1,-1,2,1,1,1,1),3,3)) #when x=1, y=-1
+eigen(matrix(c(5,0,-1,0,2,1,-1,1,-1),3,3)) #when x=-1, y=0
+eigen(matrix(c(5,1,-1,1,2,1,-1,1,-1),3,3)) #when x=-1, y=1
+eigen(matrix(c(5,0,0,0,2,1,0,1,0),3,3)) #when x=0, y=0
+eigen(matrix(c(5,1,0,1,2,1,0,1,0),3,3)) #when x=0, y=1
+eigen(matrix(c(5,0,1,0,2,1,1,1,1),3,3)) #when x=1, y=0
+eigen(matrix(c(5,1,1,1,2,1,1,1,1),3,3)) #when x=1, y=1
+```
+Then we notice that:
+
+* The eigenvalue when x=0, y=-1 is the same as the situation when x=0, y=1.
+
+* However, the eigenvalue when x=-1, y=0 are not equal to x=1, y=0. 
+
+* I predict that the eigenvalue when x=0, y=-n will be equal to the one when x=0, y=n in this instance. Conversely, it is invaild.
+
+### Question 4
+The processes of verifying are in the above.
+<br>
+
+
+
+
+<br/>
+
+
+
