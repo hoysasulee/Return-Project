@@ -1,0 +1,365 @@
+### Question 1: 
+
+> Task a
+
+In the theory, the sample mean of $x_1,..,x_6$ which are considered in standard Gaussian $N(0,1)$ should be like this:
+\begin{equation}
+\overline{x}\sim N\left( 0,\frac{1}{\sqrt{6}}\right)
+\end{equation}
+Some of the variability of this sample mean can be produced by:
+```{r}
+mean(rnorm(6))
+```
+```{r}
+mean(rnorm(6))
+```
+```{r}
+mean(rnorm(6))
+```
+
+Plot the distribution of all the variability in R.
+```{r}
+width <- 0.05
+n <- 100000
+sample_means <- replicate(n,mean(rnorm(6)))
+hist(sample_means,breaks=seq(from=-2,to=2,by=width),col='pink')
+```
+
+Verify the output if it match with the theory:
+```{r}
+width <- 0.05
+n <- 100000
+sample_means <- replicate(n,mean(rnorm(6)))
+hist(sample_means,breaks=seq(from=-2,to=2,by=width),col='pink')
+x <- seq(from=-2,to=2,len=100)
+points(x,n*width*dnorm(x,sd=1/sqrt(6)),type="l",lwd=6)
+legend("topleft",lwd=c(6,12),col=c("black","pink"),legend=c("theory","numerical"))
+```
+
+The distribution met the theory basically, we can consider that the distribution produced by R is reliable.
+<br><br/>
+
+> Task b
+
+Find a test with $α = 0.05$, the value of T which is reflected in $P(X < T) = 0.95$ is helpful to obtain a line to divide the option between rejection and fail rejection for the null. 
+```{r}
+qnorm(0.95,mean=0,sd=1/sqrt(6))
+```
+
+Hence, T = 0.6715087. The working principle of $P(X < 0.67) = 0.95$ one-sided tests in this sample $N\left(0,\frac{1}{\sqrt{6}}\right)$ can be plotted.
+```{r}
+plot(x,dnorm(x,sd=1/sqrt(6)),type='l')
+abline(v=qnorm(0.95,sd=1/sqrt(6)))
+```
+
+On the right side of dividing line, the test will reject the null, and it will be fail to reject the null on the left probability area. 
+We test the frequency of rejection.
+```{r}
+table(replicate(1000,mean(rnorm(6))>0.67))
+```
+
+We can notice when the null is ture we reject it rarely (about 5%). The p-value can be calculate by:
+```{r}
+pnorm(mean(rnorm(6)),mean=0,sd=1/sqrt(6),lower.tail=FALSE)
+```
+
+Verify the p-value.
+```{r}
+hist(replicate(1000,pnorm(mean(rnorm(6)),sd=1/sqrt(6))))
+```
+
+The p-value is uniformly distributed, therefore, the probability of it being less than 0.05 is 0.05.
+<br><br/>
+
+> Task c
+
+To calculate $\beta$ which is the probability of failing to reject the null hypothesis when the alternative $H_1:\mu=1$ is true.
+```{r}
+table(replicate(10000,mean(rnorm(6,mean=1))>qnorm(0.95,sd=1/sqrt(6))))
+```
+
+$\beta$ is about 0.78 and the power ($1-\beta$) is about 0.22. We can calculate the power exactly:
+```{r}
+pnorm(qnorm(0.95,sd=1/sqrt(6)),mean=1,sd=1/sqrt(6))
+```
+
+The power of the test is about 0.21.
+Verify it in the picture.
+```{r}
+plot(x,dnorm(x,sd=1/sqrt(6)),type='l')
+points(x,dnorm(x,mean=1,sd=1/sqrt(6)),col='red',type='l')
+abline(v=qnorm(0.95,sd=1/sqrt(6)))
+```
+<br><br/>
+
+> Task d
+
+When $\alpha=0.01$, the power of this test should be:
+```{r}
+pnorm(qnorm(0.99,sd=1/sqrt(6)),mean=1,sd=1/sqrt(6),lower.tail=FALSE)
+```
+
+It is 0.54.
+<br><br/>
+
+> Task e
+
+We can notice that with the growth of observations, the power of the test would be increasing.
+```{r}
+pnorm(qnorm(0.99,sd=1/sqrt(7)),mean=1,sd=1/sqrt(7),lower.tail=FALSE)
+```
+```{r}
+pnorm(qnorm(0.99,sd=1/sqrt(8)),mean=1,sd=1/sqrt(8),lower.tail=FALSE)
+```
+```{r}
+pnorm(qnorm(0.99,sd=1/sqrt(9)),mean=1,sd=1/sqrt(9),lower.tail=FALSE)
+```
+
+When the amount of observations is 22, it will meet the power at least 0.99.
+```{r}
+pnorm(qnorm(0.99,sd=1/sqrt(22)),mean=1,sd=1/sqrt(22),lower.tail=FALSE)
+```
+<br><br/>
+
+> Task f
+
+Plot a graph in terms of the relation between observation and power in order to narrow the range for search. It looks like this.
+```{r}
+x <- seq(from=0,to=100000,len=100000)
+plot(x,pnorm(qnorm(0.99,sd=1/sqrt(1:100000)),mean=0.02,sd=1/sqrt(1:100000),lower.tail=FALSE),xlab="Observation", ylab="Power")
+abline(h=0.99)
+```
+
+It can be seen from the output. More than 5e+04 observations are required to meet the power close to 0.99. Then, we use trial-and-error method to find a suitable number of observations based on this condition. We start from 50000 observations.
+```{r}
+pnorm(qnorm(0.99,sd=1/sqrt(50000)),mean=0.02,sd=1/sqrt(50000),lower.tail=FALSE)
+```
+```{r}
+pnorm(qnorm(0.99,sd=1/sqrt(52000)),mean=0.02,sd=1/sqrt(52000),lower.tail=FALSE)
+```
+```{r}
+pnorm(qnorm(0.99,sd=1/sqrt(54000)),mean=0.02,sd=1/sqrt(54000),lower.tail=FALSE)
+```
+```{r}
+pnorm(qnorm(0.99,sd=1/sqrt(56000)),mean=0.02,sd=1/sqrt(56000),lower.tail=FALSE)
+```
+
+56000 is too much. Reduce observations.
+```{r}
+pnorm(qnorm(0.99,sd=1/sqrt(55000)),mean=0.02,sd=1/sqrt(55000),lower.tail=FALSE)
+```
+```{r}
+pnorm(qnorm(0.99,sd=1/sqrt(54800)),mean=0.02,sd=1/sqrt(54800),lower.tail=FALSE)
+```
+```{r}
+pnorm(qnorm(0.99,sd=1/sqrt(54600)),mean=0.02,sd=1/sqrt(54600),lower.tail=FALSE)
+```
+```{r}
+pnorm(qnorm(0.99,sd=1/sqrt(54400)),mean=0.02,sd=1/sqrt(54400),lower.tail=FALSE)
+```
+```{r}
+pnorm(qnorm(0.99,sd=1/sqrt(54200)),mean=0.02,sd=1/sqrt(54200),lower.tail=FALSE)
+```
+```{r}
+pnorm(qnorm(0.99,sd=1/sqrt(54100)),mean=0.02,sd=1/sqrt(54100),lower.tail=FALSE)
+```
+
+It is between 54100 and 54200.
+```{r}
+pnorm(qnorm(0.99,sd=1/sqrt(54110)),mean=0.02,sd=1/sqrt(54110),lower.tail=FALSE)
+```
+```{r}
+pnorm(qnorm(0.99,sd=1/sqrt(54120)),mean=0.02,sd=1/sqrt(54120),lower.tail=FALSE)
+```
+
+It is between 54110 and 54120.
+```{r}
+pnorm(qnorm(0.99,sd=1/sqrt(54119)),mean=0.02,sd=1/sqrt(54119),lower.tail=FALSE)
+```
+```{r}
+pnorm(qnorm(0.99,sd=1/sqrt(54118)),mean=0.02,sd=1/sqrt(54118),lower.tail=FALSE)
+```
+
+It needs 54119 observations to ensure $\alpha$ is at most 0.01 and the power is at least 0.99.
+
+### Question 2: 
+
+> Task a
+
+Set the random number seed firstly.
+```{r}
+set.seed(18035793)
+x<- rnorm(5)
+```
+
+The log-likelihood for 'mean=0, sd=1':
+```{r}
+prod(dnorm(x,mean=0,sd=1,log=TRUE))
+```
+The log-likelihood for 'mean=0, sd=1.1':
+```{r}
+prod(dnorm(x,mean=0,sd=1.1,log=TRUE))
+```
+The log-likelihood for 'mean=0.1, sd=1':
+```{r}
+prod(dnorm(x,mean=0.1,sd=1,log=TRUE))
+```
+The log-likelihood for 'mean=0.1, sd=1':
+```{r}
+prod(dnorm(x,mean=0.1,sd=1.1,log=TRUE))
+```
+
+The log-likelihood for mean = 0 and sd = 1 is the most likely situation, because it shows the least negative logarithm of the likelihood.
+<br><br/>
+
+> Task b
+
+Firstly, we plot a support function to seek the feasible range of maximum likelihood.
+```{r}
+support <- function(m){sum(dnorm(x,mean=m,log=TRUE))}  # support function
+m <- seq(from=-8,to=8,len=100)    # range of plausible population means
+plot(m,sapply(m,support))        # plot the support
+abline(v=mean(x))  
+```
+
+The mean is between $(0,-1)$. Subsequently, the method trial-and-error is used to find the precise maximum likelihood estimate. We start from mean=0, sd=1.
+```{r}
+prod(dnorm(x,mean=0,sd=1))
+```
+
+The growth of sample mean will decrease the likelihood estimate.
+```{r}
+prod(dnorm(x,mean=1,sd=1))
+```
+
+Narrowing sample mean will not change the likelihood estimate obviously.
+```{r}
+prod(dnorm(x,mean=1e-08,sd=1))
+```
+
+A negative value of mean can make the likelihood improved.
+```{r}
+prod(dnorm(x,mean=-0.1,sd=1))
+```
+```{r}
+prod(dnorm(x,mean=-0.2,sd=1))
+```
+```{r}
+prod(dnorm(x,mean=-0.3,sd=1))
+```
+```{r}
+prod(dnorm(x,mean=-0.4,sd=1))
+```
+
+The result went wrose when mean equal -0.5.
+```{r}
+prod(dnorm(x,mean=-0.5,sd=1))
+```
+
+or even mean=-0.41
+```{r}
+prod(dnorm(x,mean=-0.41,sd=1))
+```
+
+Aquire an optimal solution.
+```{r}
+prod(dnorm(x,mean=-0.39,sd=1))
+```
+```{r}
+prod(dnorm(x,mean=-0.38,sd=1))
+```
+```{r}
+prod(dnorm(x,mean=-0.37,sd=1))
+```
+```{r}
+prod(dnorm(x,mean=-0.36,sd=1))
+```
+```{r}
+prod(dnorm(x,mean=-0.35,sd=1))
+```
+
+The performance went wrose when mean = -0.35. Therefore, mean = -0.36 is access to the maximum of likelihood estimate. Next, determine the standard deviation.
+
+```{r}
+prod(dnorm(x,mean=-0.36,sd=0.9))
+```
+```{r}
+prod(dnorm(x,mean=-0.36,sd=0.8))
+```
+
+The solution is between $sd ∈ [0.9,0.8]$.
+
+```{r}
+prod(dnorm(x,mean=-0.36,sd=0.89))
+```
+```{r}
+prod(dnorm(x,mean=-0.36,sd=0.88))
+```
+```{r}
+prod(dnorm(x,mean=-0.36,sd=0.87))
+```
+```{r}
+prod(dnorm(x,mean=-0.36,sd=0.86))
+```
+```{r}
+prod(dnorm(x,mean=-0.36,sd=0.85))
+```
+```{r}
+prod(dnorm(x,mean=-0.36,sd=0.84))
+```
+
+The best estimate appeared in 0.85 of stadard deviation.
+In conclusion, when mean = -0.36, sd = 0.85, the likelihood estimate is close to maximum approximatly.
+
+### Question 3:
+
+> Task a
+ 
+P-value in this task represents the probability for the null hypothesis is success to obtain the observation $r=32$ or an observation more extreme.
+
+The more extreme here means the situation when the obeservation larger than the observed sample mean.
+<br><br/>
+
+> Task b
+
+Calculate p-value based on null hypothesis $H_0$ : $P = 0.5$.
+```{r}
+pbinom(31,50,0.5,lower.tail=FALSE)
+```
+The p-value is about 3.2%, which is less than 5% level so we reject the null. Visually:
+```{r}
+x <- 0:50
+plot(x,dbinom(x,50,0.5),col=c(rep("black",33),rep("red",18)),type="h",lwd=5,main="Null distribution")
+legend("topleft",lty=1,lwd=2,col=c("black","red"),
+legend=c("more extreme","distribution"))
+```
+<br><br/>
+
+> Task c
+
+```{r}
+support <- function(m){sum(dbinom(32:50,50,0.5))}
+m <- seq(from=-100,to=100,len=100) # range of plausible population means
+s <- sapply(m,support) # calculate support
+plot(m,s-max(s)) # subtract maximum value so support=0 at max
+abline(v=mean(32:50)) # best-supported value is the sample mean
+abline(h=0) # maximum support = 0
+abline(h=-2) 
+```
+```{r}
+#p <- seq(from=0, to=1, len=100)
+#plot(p,dbinom(32,50,p))
+```
+
+<br><br/>
+
+> Task d
+
+The power of size not exceeding 1% is:
+```{r}
+pbinom(qbinom(0.99,50,0.5),50,2/3,lower.tail=FALSE)
+```
+
+The power is about 0.48.
+
+
