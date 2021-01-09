@@ -14,3 +14,8 @@ Initially, I will submit my previous academic coding work consist of R, Python, 
 Monument.
 
 Starting business with my code from now, 2021.
+
+Strategies
+~~~~~~~~~~~~~~~
+
+- Project
