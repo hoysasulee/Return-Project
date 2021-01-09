@@ -1,12 +1,3 @@
----
-title: "STAT805 Assignment 1"
-subtitle: "Kexiang Huang"
-output:
-  word_document: default
-  html_document:
-    df_print: paged
-  pdf_document: default
----
 
 ### Question 1: 
 
