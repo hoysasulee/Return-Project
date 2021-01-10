@@ -1,5 +1,5 @@
 proc optmodel;
-	Title "Assignment 2, Suez Case study";
+	Title "Water Pumps Optimization Case study";
 	/* declare sets and parameters */
 	set <str> NETWORK_CONSUMERS = /Ellerslie Penrose Newmarket/;
 	set <str> NETWORK_VALVES 	= /GreenwoodValve EricssonValve/;
