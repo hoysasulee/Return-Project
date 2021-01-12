@@ -264,6 +264,6 @@ proc sgplot data=flow_out noborder;
 	xaxis  label='hour from 08:00';
 	yaxis  grid  label='PS flow rate';
 run;
-
+ 
 /*Reset title*/
 title;
