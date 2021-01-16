@@ -65,7 +65,7 @@ The Expectation-Maximization (EM) is an algorithm which is commonly used for the
 ## Pre-processing
 ### Linear Regression
 Considering possible differences presence in drivers’ faces and pattern sizes, Linear Regression method is required to make the center points of the drivers’ face coincide to each other for 606 instances. The width values and the height values are transformed to a uniform value and using the zoom coefficients as weights to standardize the coordinate of facial key points. Formally, the mathematical formulation of this regression model can be indicated as follows:
-<img src="http://chart.googleapis.com/chart?cht=tx&chl= Y ={W_i}*X+{b_i} style="border:none;">
+<img src="http://chart.googleapis.com/chart?cht=tx&chl= Y ={W_i}*X+{b_i}" style="border:none;">
                                                                                              
 The variable Y is the objective position of facial key points, 𝑤/ is the 𝑖th zoom coefficient, the variable X is the vector of the original position and 𝑏/ is the 𝑖th bias. In this paper, the zoom coefficients are given by the maximum of the face width and the
 face height.
@@ -79,3 +79,65 @@ hanks to the complexity of the relevance between various face patterns. The impl
 
 Moreover, Principal Component Analysis (PCA), the schema aim at resulting in the smallest error between the attribute vector and its projections by seeking a linear subspace in data space, also used in this task to simplify the dataset and maintain the variance which contributed the most in the dataset by reducing the dimensionality to 2.
 It has capability to create benefits for the visualized clustering result.
+
+## Performance Metric
+### Dunn Index
+Dunn Index (DI), an internal validity index for clustering evaluation through identifying compact sets of clusters, is used as a performance metric in this paper. The outcome of this method is based on the clustered data itself. The following formulation illustrates the mathematical calculation process of DI. It is usually considered that the higher DI the better clustering performance the model has, despite the computational cost may increase due to the growth of dimensionality and clusters’ amount.
+
+### Silhouette coefficient
+Silhouette coefficient integrates the Cohesion and Separation of clustering method and is used to evaluate the performance of clustering. The value of Silhouette coefficient is between -1 and 1. Theoretically, the closer the value to 1, the better clustering effect it has. Initially, it requires to calculate the dissimilarity in the same cluster and any other cluster respectively. Then, the Silhouette coefficient can be defined as Figure 4.
+![image](https://github.com/hoysasulee/Return-Project/blob/main/img/img5.png)
+
+The mean of 𝑠 𝑖 of all samples is called the Silhouette coefficient of the clustering result, which is a reasonable and effective measure of the cluster.
+
+# Results
+## Empirical Analysis
+### K-Means
+Initially, the Elbow method is used to determine the appropriate number of clusters which are partitioned by the K-Means algorithm. Each iteration of clustering is plotted in Figure 5 after Linear Regression process and select the number that represents the most variance. From the graph, the elbow appears between 2 and 4 that avoiding diminishing returns of adding more clusters. Therefore, we select 3 as the number of clusters.
+![image](https://github.com/hoysasulee/Return-Project/blob/main/img/img6.png)
+
+The dataset was tested depend on 4 situations respectively consist of the row data, the regression data, the normalized data and the Euclidean distances. Figure 6 demonstrates the visualized clustering result in terms of K-Means with K=3 and the random number for centroid initialization is 1.
+![image](https://github.com/hoysasulee/Return-Project/blob/main/img/img7.png)
+
+It can be observed that the effect of clustering was promoted through various optimizations, the Linear Regression is the most effective particularly among them, for the model. In the same way, even we set the number of cluster K to 4, the performance of K-Means algorithm also worked in a reasonable range and the dataset was splitted into 4 distinct clusters. Table 1 shows the number of observations in each cluster with PCA, and compare with the amount without PCA.
+![image](https://github.com/hoysasulee/Return-Project/blob/main/img/img8.png)
+
+Subsequently, cluster silhouettes were also plotted which can be seen in Figure 7 to visualize outliers and measure the performance of this model.
+![image](https://github.com/hoysasulee/Return-Project/blob/main/img/img9.png)
+
+### DBSCAN
+The DBSCAN model was placed on a high expectation before the experiment because of the merit it is to achieve clustering based on density. However, the truth is not ideal. Through tuning two main parameters include the maximum distance between two samples (eps) and the number of core point, the dataset is distributed in several clusters in Figure 8. There were a large number of noises which cannot be clustered arise in the output, and the number of clusters did not fit the expectation that it should be.
+![image](https://github.com/hoysasulee/Return-Project/blob/main/img/img10.png)
+
+Consider the Silhouette coefficient shows in Figure 9, more than a half data were given a negative value of silhouette coefficient that represented as noises in the
+clustering result. It implied that this model did not fit the dataset.
+![image](https://github.com/hoysasulee/Return-Project/blob/main/img/img11.png)
+
+Although the performance of DBSCAN algorithm is not satisfactory, the performance evolution still can be noticed compare with the raw data and the data after pre-processing and feature selection.
+
+### EM
+The GMM is used to clustering the data due to its strong correlation with EM algorithm. Through tuning the parameter which the number of mixture components and the maximum iterations (n_components = 2, max_iter=100), it produced the result refer to Figure 10.
+![image](https://github.com/hoysasulee/Return-Project/blob/main/img/img12.png)
+
+From this graph, it can be proved that the performance of data clustering was improved by a suitable process for the dataset. Typically, the normalized data seems extremely fitting for the EM algorithm. In contrast, the Euclidean distance represented worsening.
+
+## Comparison
+The dataset was established in 2016 that it is not the first time for it to implement a clustering analysis. The research based on this dataset was originated from the study indicated by Katerine, Aura and Antonio (2016). It provides numerous valuable experience for the paper which aims at similar dataset analytics. In this case, they created a reduced feature model with regard to driver head pose estimation. Fisher’s Linear Discriminant (FLD), PCA and multiple linear regression was used for each pose interval. It supposed two reliable method aim at two different datasets. The best accuracy of these methods are 100% for manual detection and 98.85% for automatic one which is able to be combined in a tablet or a real-time mobile application due to the low computational cost.
+Antonopoulos, Nikolaidis and Pitas (2007) supposed a Hierarchical method for facial attributes clustering and utilized the Scale Invariant Feature Transform (SIFT) algorithm to calculate the dissimilarity matrix, 941 face images were clustered in 4 clusters with 0.8763 F-measure (1 indicating perfect clustering).
+
+## Discussion
+Consider the Silhouette coefficient produced from each algorithm and its efficiency. It is not hard to evaluate the most effective algorithm, which is K-Means. It represented a high distinction of each cluster with numerous parameter tuning integrations and satisfied in four situations set before the experiment. While the DBSCAN algorithm fit the dataset worst together with a large number of noise and low accuracy of distinction. Although the EM algorithm showed highly effective for the normalized data, the performance in the Euclidean distance did not satisfy the requirement of the experiment.
+
+# Conclusion
+This paper achieved a clustering analysis for a facial attributes dataset (Katerine, Aura and Antonio, 2016). The method Linear Regression and Normalization were used in data pre-processing and the Euclidean distance was calculated to obtain more effective feature for the model as well as PCA.
+For the mining schema, the algorithms K-Means, DBSCAN and EM were used to implement clustering analysis respectively. Consequently, the clustering result was measured by Dunn Index and Silhouette coefficient method to evaluate the performance of each algorithm. In conclusion, the output showed that K-Means is the best algorithm in three to fit the annotation face dataset. It could produce 3 or 4 clusters with high accuracy and low cost of time.
+
+# Reference
+[1]. Antonopoulos, P., Nikolaidis, N., & Pitas, I. (2007). Hierarchical Face Clustering using SIFT Image Features. 2007 IEEE Symposium on Computational Intelligence in Image and Signal Processing.
+[2]. Bansal, A., Nanduri, A., Castillo, C. D., Ranjan, R., & Chellappa, R. (2017). UMDFaces: An annotated face dataset for training deep networks. 2017 IEEE International Joint Conference on Biometrics (IJCB).
+[3]. Diaz-Chito, K., Hernández-Sabaté, A., & López, A. M. (2016). A reduced feature set for driver head pose estimation. Applied Soft Computing, 45, 98–107.
+[4]. Ding, C., & He, X. (2004). K-means clustering via principal component analysis.
+Twenty-First International Conference on Machine Learning - ICML ’04.
+[5]. Dudik, J. M., Kurosu, A., Coyle, J. L., & Sejdić, E. (2015). A comparative analysis of DBSCAN, K-means, and quadratic variation algorithms for automatic identification of swallows from swallowing accelerometry signals. Computers in Biology and Medicine, 59, 10–18.
+[6]. Michael, B. (2017). Machine Learning for OpenCV. Packt Publishing.
+
