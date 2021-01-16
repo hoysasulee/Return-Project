@@ -65,7 +65,7 @@ The Expectation-Maximization (EM) is an algorithm which is commonly used for the
 ## Pre-processing
 ### Linear Regression
 Considering possible differences presence in drivers’ faces and pattern sizes, Linear Regression method is required to make the center points of the drivers’ face coincide to each other for 606 instances. The width values and the height values are transformed to a uniform value and using the zoom coefficients as weights to standardize the coordinate of facial key points. Formally, the mathematical formulation of this regression model can be indicated as follows:
-<img src="http://chart.googleapis.com/chart?cht=tx&chl= Y ={W_i}*X+{b_i}" style="border:none;">
+<br><img src="http://chart.googleapis.com/chart?cht=tx&chl= Y ={W_i}*X/+{b_i}" style="border:none;"></br>
                                                                                              
 The variable Y is the objective position of facial key points, 𝑤/ is the 𝑖th zoom coefficient, the variable X is the vector of the original position and 𝑏/ is the 𝑖th bias. In this paper, the zoom coefficients are given by the maximum of the face width and the
 face height.
